@@ -149,15 +149,15 @@ function jRelationship(selector, labels, lines, options) {
                 ctx.closePath();
                 ctx.stroke();
             } else if (weight >= 2) {
-                var dx = Math.abs(p1.x - p2.x),
-                    dy = Math.abs(p1.y - p2.y),
+                var dx = p1.x - p2.x,
+                    dy = p2.y - p1.y,
                     diffX = weight * dy / Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2)),
                     diffY = weight * dx / Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
                 ctx.beginPath();
                 ctx.moveTo(p1.x, p1.y);
                 ctx.lineTo(p2.x, p2.y);
-                ctx.lineTo(p2.x + diffX, p2.y - diffY);
-                ctx.lineTo(p1.x + diffX, p1.y - diffY);
+                ctx.lineTo(p2.x + diffX, p2.y + diffY);
+                ctx.lineTo(p1.x + diffX, p1.y + diffY);
                 ctx.lineTo(p1.x, p1.y);
                 ctx.closePath();
                 ctx.fill();
