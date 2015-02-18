@@ -88,6 +88,7 @@ function jRelationship(selector, labels, lines, options) {
         fontSize: 16,
         padding: 12,
         style: 'rgba(0, 0, 200, 1)',
+        lineStyle: 'rgba(0, 0, 0, 1)',
         radius: 4
     }, options);
 
@@ -139,6 +140,8 @@ function jRelationship(selector, labels, lines, options) {
                     x: label2.x + label2.width/2,
                     y: label2.y + label2.height/2
                 };
+
+            ctx.fillStyle = options.lineStyle;
             if (weight < 2) {
                 ctx.beginPath();
                 ctx.moveTo(p1.x, p1.y);
@@ -150,7 +153,6 @@ function jRelationship(selector, labels, lines, options) {
                     dy = Math.abs(p1.y - p2.y),
                     diffX = weight * dy / Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2)),
                     diffY = weight * dx / Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
-                console.log(diffX + diffY);
                 ctx.beginPath();
                 ctx.moveTo(p1.x, p1.y);
                 ctx.lineTo(p2.x, p2.y);
@@ -160,27 +162,39 @@ function jRelationship(selector, labels, lines, options) {
                 ctx.closePath();
                 ctx.fill();
             }
+        },
+        draw: function() {
+            var id;
+
+            ctx.clearRect(0, 0, 1000, 600);
+
+            for (id in labels) {
+                if (labels.hasOwnProperty(id)) {
+                    labels[id].x += (Math.random() * 2 - 1) * 5;
+                    labels[id].y += (Math.random() * 2 - 1) * 5;
+                }
+            }
+
+            lines.forEach(function(line) {
+                graphic.drawLine(labels[line[0]], labels[line[1]], line[2]);
+            });
+
+            for (id in labels) {
+                if (labels.hasOwnProperty(id)) {
+                    graphic.drawLabel(labels[id]);
+                }
+            }
         }
     };
 
-    //initialize the graph
-    var id;
-
-    for (id in labels) {
+    for (var id in labels) {
         if (labels.hasOwnProperty(id)) {
             graphic.calcLabel(labels[id]);
         }
     }
 
-    lines.forEach(function(line) {
-        graphic.drawLine(labels[line[0]], labels[line[1]], line[2]);
-    });
-
-    for (id in labels) {
-        if (labels.hasOwnProperty(id)) {
-            graphic.drawLabel(labels[id]);
-        }
-    }
+    setInterval(graphic.draw, 100);
+    //graphic.draw();
 }
 
 var labels = {
@@ -189,9 +203,9 @@ var labels = {
         'c': {name: '嘿嘿嘿嘿sadf', style: 'rgba(200, 0, 0, 1)', fontSize: 30}
     },
     lines = [
-        ['a', 'b', 5],
-        ['b', 'c', 3],
-        ['a', 'c', 1]
+        ['a', 'b', 7],
+        ['b', 'c', 5],
+        ['a', 'c', 3]
     ];
 jRelationship('#canvas', labels, lines, {
     fontSize: 18
