@@ -95,6 +95,7 @@ function jRelationship(selector, labels, lines, options) {
     lines = util.clone(lines);
     ctx.textBaseline = 'top';
 
+    //several methods for graphic render
     var graphic = {
         util: {
             roundRect: function roundedRect(x, y, width, height, radius) {
@@ -130,14 +131,39 @@ function jRelationship(selector, labels, lines, options) {
             ctx.fillText(label.name, label.x + label.padding, label.y + label.padding);
         },
         drawLine: function (label1, label2, weight) {
-            ctx.beginPath();
-            ctx.moveTo(label1.x + label1.width/2, label1.y + label1.height/2);
-            ctx.lineTo(label2.x + label2.width/2, label2.y + label2.height/2);
-            ctx.closePath();
-            ctx.stroke();
+            var p1 = {
+                    x: label1.x + label1.width/2,
+                    y: label1.y + label1.height/2
+                },
+                p2 = {
+                    x: label2.x + label2.width/2,
+                    y: label2.y + label2.height/2
+                };
+            if (weight < 2) {
+                ctx.beginPath();
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.closePath();
+                ctx.stroke();
+            } else if (weight >= 2) {
+                var dx = Math.abs(p1.x - p2.x),
+                    dy = Math.abs(p1.y - p2.y),
+                    diffX = weight * dy / Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2)),
+                    diffY = weight * dx / Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
+                console.log(diffX + diffY);
+                ctx.beginPath();
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.lineTo(p2.x + diffX, p2.y + diffY);
+                ctx.lineTo(p1.x + diffX, p1.y + diffY);
+                ctx.lineTo(p1.x, p1.y);
+                ctx.closePath();
+                ctx.fill();
+            }
         }
     };
 
+    //initialize the graph
     var id;
 
     for (id in labels) {
@@ -163,8 +189,8 @@ var labels = {
         'c': {name: '嘿嘿嘿嘿sadf', style: 'rgba(200, 0, 0, 1)', fontSize: 30}
     },
     lines = [
-        ['a', 'b', 3],
-        ['b', 'c', 2],
+        ['a', 'b', 5],
+        ['b', 'c', 3],
         ['a', 'c', 1]
     ];
 jRelationship('#canvas', labels, lines, {
