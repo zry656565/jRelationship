@@ -156,8 +156,8 @@ function jRelationship(selector, labels, lines, options) {
                 ctx.beginPath();
                 ctx.moveTo(p1.x, p1.y);
                 ctx.lineTo(p2.x, p2.y);
-                ctx.lineTo(p2.x + diffX, p2.y + diffY);
-                ctx.lineTo(p1.x + diffX, p1.y + diffY);
+                ctx.lineTo(p2.x + diffX, p2.y - diffY);
+                ctx.lineTo(p1.x + diffX, p1.y - diffY);
                 ctx.lineTo(p1.x, p1.y);
                 ctx.closePath();
                 ctx.fill();
