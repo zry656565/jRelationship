@@ -87,7 +87,8 @@ function jRelationship(selector, labels, lines, options) {
     options = util.extend({
         fontSize: 16,
         padding: 12,
-        style: 'rgba(0, 0, 200, 1)'
+        style: 'rgba(0, 0, 200, 1)',
+        radius: 4
     }, options);
 
     labels = util.clone(labels);
@@ -95,25 +96,61 @@ function jRelationship(selector, labels, lines, options) {
     ctx.textBaseline = 'top';
 
     var graphic = {
-        drawLabel: function (label) {
-            if (!label.x) {
-                label.fontSize = label.fontSize || options.fontSize;
-                ctx.font = label.fontSize + "px serif";
-                label.padding = label.padding || options.padding;
-                label.width = ctx.measureText(label.name).width + label.padding * 2;
-                label.height = label.fontSize + label.padding * 2;
-                //put the label on random place
-                label.x = Math.random() * (canvas.width - label.width);
-                label.y = Math.random() * (canvas.height - label.height);
+        util: {
+            roundRect: function roundedRect(x, y, width, height, radius) {
+                ctx.beginPath();
+                ctx.moveTo(x, y + radius);
+                ctx.lineTo(x, y + height - radius);
+                ctx.quadraticCurveTo(x, y + height, x + radius, y + height);
+                ctx.lineTo(x + width - radius, y + height);
+                ctx.quadraticCurveTo(x + width, y + height, x + width, y + height - radius);
+                ctx.lineTo(x + width, y + radius);
+                ctx.quadraticCurveTo(x + width, y, x + width - radius, y);
+                ctx.lineTo(x + radius, y);
+                ctx.quadraticCurveTo(x, y, x, y + radius);
+                ctx.fill();
             }
+        },
+        calcLabel: function (label) {
+            label.fontSize = label.fontSize || options.fontSize;
+            label.padding = label.padding || options.padding;
+            ctx.font = label.fontSize + "px serif";
+            label.width = ctx.measureText(label.name).width + label.padding * 2;
+            label.height = label.fontSize + label.padding * 2;
+            //put the label on random place
+            label.x = Math.random() * (canvas.width - label.width);
+            label.y = Math.random() * (canvas.height - label.height);
+            label.radius = label.radius || options.radius;
+        },
+        drawLabel: function (label) {
             ctx.fillStyle = label.style || options.style;
-            ctx.fillRect(label.x, label.y, label.width, label.height);
+            graphic.util.roundRect(label.x, label.y, label.width, label.height, 4);
             ctx.fillStyle = "#fff";
+            ctx.font = label.fontSize + "px serif";
             ctx.fillText(label.name, label.x + label.padding, label.y + label.padding);
+        },
+        drawLine: function (label1, label2, weight) {
+            ctx.beginPath();
+            ctx.moveTo(label1.x + label1.width/2, label1.y + label1.height/2);
+            ctx.lineTo(label2.x + label2.width/2, label2.y + label2.height/2);
+            ctx.closePath();
+            ctx.stroke();
         }
     };
 
-    for (var id in labels) {
+    var id;
+
+    for (id in labels) {
+        if (labels.hasOwnProperty(id)) {
+            graphic.calcLabel(labels[id]);
+        }
+    }
+
+    lines.forEach(function(line) {
+        graphic.drawLine(labels[line[0]], labels[line[1]], line[2]);
+    });
+
+    for (id in labels) {
         if (labels.hasOwnProperty(id)) {
             graphic.drawLabel(labels[id]);
         }
