@@ -91,9 +91,9 @@ function jRelationship(selector, labels, lines, options) {
         lineStyle: 'rgba(0, 0, 0, 1)',
         radius: 4,
         elasticity: 0.5,
-        stableLength: 100,
+        stableLength: 200,
         interval: 35,
-        resistance: 10
+        resistance: 20
     }, options);
 
     labels = util.clone(labels);
@@ -201,6 +201,9 @@ function jRelationship(selector, labels, lines, options) {
                     //assume F = ma, m = 1, then F = a.
                     current.Vx += Fx * options.interval / 1000;
                     current.Vy += Fy * options.interval / 1000;
+                    //consider about resistance
+                    current.Vx -= (current.Vx > 0 ? 1 : -1) * options.resistance * options.interval / 1000;
+                    current.Vy -= (current.Vy > 0 ? 1 : -1) * options.resistance * options.interval / 1000;
                     current.x += current.Vx * options.interval / 1000;
                     current.y += current.Vy * options.interval / 1000;
                 }
