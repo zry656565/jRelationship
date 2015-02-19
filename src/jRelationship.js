@@ -91,9 +91,9 @@ function jRelationship(selector, labels, lines, options) {
         lineStyle: 'rgba(0, 0, 0, 1)',
         radius: 4,
         elasticity: 0.5,
-        stableLength: 200,
+        stableLength: 300,
         interval: 35,
-        resistance: 20
+        resistance: 10
     }, options);
 
     labels = util.clone(labels);
@@ -204,10 +204,28 @@ function jRelationship(selector, labels, lines, options) {
                     //consider about resistance
                     current.Vx -= (current.Vx > 0 ? 1 : -1) * options.resistance * options.interval / 1000;
                     current.Vy -= (current.Vy > 0 ? 1 : -1) * options.resistance * options.interval / 1000;
-                    current.x += current.Vx * options.interval / 1000;
-                    current.y += current.Vy * options.interval / 1000;
+                    //if touch the walls, reverse the velocity
+                    current.newPosition = {
+                        x: current.x + current.Vx * options.interval / 1000,
+                        y: current.y + current.Vy * options.interval / 1000
+                    };
+                    if (current.newPosition.x < 0 || current.newPosition.x + current.width > canvas.width) {
+                        console.log(current.newPosition.x, current.width);
+                        current.Vx = -current.Vx;
+                    }
+                    if (current.newPosition.y < 0 || current.newPosition.y + current.height > canvas.height) {
+                        console.log(current.newPosition.y, current.height);
+                        current.Vy = -current.Vy;
+                    }
                 }
             }
+            for (id in labels) {
+                if (labels.hasOwnProperty(id)) {
+                    labels[id].x = labels[id].newPosition.x;
+                    labels[id].y = labels[id].newPosition.y;
+                }
+            }
+
 
             lines.forEach(function(line) {
                 graphic.drawLine(labels[line[0]], labels[line[1]], line[2]);
