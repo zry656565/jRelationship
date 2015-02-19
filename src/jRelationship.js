@@ -89,7 +89,11 @@ function jRelationship(selector, labels, lines, options) {
         padding: 12,
         style: 'rgba(0, 0, 200, 1)',
         lineStyle: 'rgba(0, 0, 0, 1)',
-        radius: 4
+        radius: 4,
+        elasticity: 0.5,
+        stableLength: 100,
+        interval: 35,
+        resistance: 10
     }, options);
 
     labels = util.clone(labels);
@@ -99,7 +103,7 @@ function jRelationship(selector, labels, lines, options) {
     //several methods for graphic render
     var graphic = {
         util: {
-            roundRect: function roundedRect(x, y, width, height, radius) {
+            roundRect: function (x, y, width, height, radius) {
                 ctx.beginPath();
                 ctx.moveTo(x, y + radius);
                 ctx.lineTo(x, y + height - radius);
@@ -111,6 +115,9 @@ function jRelationship(selector, labels, lines, options) {
                 ctx.lineTo(x + radius, y);
                 ctx.quadraticCurveTo(x, y, x, y + radius);
                 ctx.fill();
+            },
+            distance: function (label1, label2) {
+                return Math.sqrt( Math.pow(label1.x - label2.x, 2) + Math.pow(label1.y - label2.y, 2) );
             }
         },
         calcLabel: function (label) {
@@ -123,6 +130,9 @@ function jRelationship(selector, labels, lines, options) {
             label.x = Math.random() * (canvas.width - label.width);
             label.y = Math.random() * (canvas.height - label.height);
             label.radius = label.radius || options.radius;
+            //initial velocity
+            label.Vx = 0;
+            label.Vy = 0;
         },
         drawLabel: function (label) {
             ctx.fillStyle = label.style || options.style;
@@ -166,12 +176,33 @@ function jRelationship(selector, labels, lines, options) {
         draw: function() {
             var id;
 
-            ctx.clearRect(0, 0, 1000, 600);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+            //get the new position of labels
             for (id in labels) {
                 if (labels.hasOwnProperty(id)) {
-                    labels[id].x += (Math.random() * 2 - 1) * 5;
-                    labels[id].y += (Math.random() * 2 - 1) * 5;
+                    var Fx = 0,
+                        Fy = 0,
+                        F = 0,
+                        current = labels[id],
+                        next,
+                        distance;
+
+                    for (var i = 0; i < relationship[id].length; i++) {
+                        next = labels[relationship[id][i]];
+                        distance = graphic.util.distance(current, next);
+                        F = options.elasticity * (distance - options.stableLength);
+                        //calculate the force at direction X
+                        Fx += F * (next.x - current.x) / distance;
+                        //calculate the force at direction Y
+                        Fy += F * (next.y - current.y) / distance;
+                    }
+
+                    //assume F = ma, m = 1, then F = a.
+                    current.Vx += Fx * options.interval / 1000;
+                    current.Vy += Fy * options.interval / 1000;
+                    current.x += current.Vx * options.interval / 1000;
+                    current.y += current.Vy * options.interval / 1000;
                 }
             }
 
@@ -187,13 +218,21 @@ function jRelationship(selector, labels, lines, options) {
         }
     };
 
+    var relationship = {};
     for (var id in labels) {
         if (labels.hasOwnProperty(id)) {
             graphic.calcLabel(labels[id]);
+            relationship[id] = [];
         }
     }
 
-    setInterval(graphic.draw, 100);
+    //store labels relationships in a big array
+    lines.forEach(function(line) {
+        relationship[line[0]].push(line[1]);
+        relationship[line[1]].push(line[0]);
+    });
+
+    setInterval(graphic.draw, options.interval);
     //graphic.draw();
 }
 
