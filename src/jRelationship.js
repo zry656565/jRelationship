@@ -91,7 +91,7 @@ function jRelationship(selector, labels, lines, options) {
         lineStyle: 'rgba(0, 0, 0, 1)',
         radius: 4,
         elasticity: 0.5,
-        stableLength: 300,
+        stableLength: 200,
         interval: 35,
         resistance: 10
     }, options);
@@ -258,15 +258,62 @@ function jRelationship(selector, labels, lines, options) {
 }
 
 var labels = {
-        'a': {name: '呵呵呵aaa'},
-        'b': {name: '啦啦啦啦啦sadb'},
-        'c': {name: '嘿嘿嘿嘿sadf', style: 'rgba(200, 0, 0, 1)', fontSize: 30}
-    },
-    lines = [
-        ['a', 'b', 7],
-        ['b', 'c', 5],
-        ['a', 'c', 3]
-    ];
+    'js': { name: 'javascript', type: 'lang' },
+    'java': { name: 'Java', type: 'lang' },
+    'c': { name: 'C/C++', type: 'lang' },
+    'c#': { name: 'C#', type: 'lang' },
+    'css': { name: 'css', type: 'lang' },
+    'html': { name: 'html5', type: 'lang' },
+    'git': { name: 'git', type: 'tool' },
+    'justjs': { name: 'JustJS', type: 'experience' },
+    'jreparser': { name: 'JRE-Parser', type: 'experience' },
+    'ms-intern': { name: 'Microsoft实习', type: 'experience' },
+    'haijiao': { name: '海角教育', type: 'experience' },
+    'unity-3d': { name: 'Unity-3d', type: 'tool' },
+    'mongodb': { name: 'MongoDB', type: 'tool' },
+    'logv': { name: 'LogV', type: 'experience' },
+    'kinect': { name: 'Kinect', type: 'tool' },
+    'screenbuilder': { name: 'Screen Builder', type: 'experience' },
+    'adventure': { name: '冒险的召唤', type: 'experience' },
+    'jekyll': { name: 'jekyll', type: 'tool' },
+    'uav': { name: '小型无人机技术大赛', type: 'experience' },
+    'ssh': { name: 'Struct+Spring+Hibernate', type: 'tool' },
+    'game-dev': { name: '游戏开发', type: 'experience' },
+    'blog': { name: 'Jerry的乐园（博客）', type: 'experience' }
+};
+
+var lines = [
+    ['ms-intern', 'js', 3],
+    ['ms-intern', 'css', 2],
+    ['ms-intern', 'html', 2],
+    ['ms-intern', 'c#', 2],
+    ['ms-intern', 'git', 2],
+    ['haijiao', 'ssh', 2],
+    ['haijiao', 'js', 1],
+    ['haijiao', 'java', 2],
+    ['haijiao', 'git', 1],
+    ['logv', 'js', 2],
+    ['logv', 'css', 1],
+    ['logv', 'java', 2],
+    ['logv', 'mongodb', 2],
+    ['screenbuilder', 'c', 2],
+    ['screenbuilder', 'c#', 2],
+    ['screenbuilder', 'kinect', 3],
+    ['adventure', 'unity-3d', 3],
+    ['adventure', 'game-dev', 3],
+    ['adventure', 'c#', 1],
+    ['adventure', 'js', 2],
+    ['blog', 'jekyll', 2],
+    ['blog', 'js', 2],
+    ['blog', 'css', 3],
+    ['blog', 'html', 3],
+    ['blog', 'git', 2],
+    ['uav', 'c', 2],
+    ['uav', 'git', 1],
+    ['justjs', 'js', 3],
+    ['jreparser', 'js', 3]
+];
+
 jRelationship('#canvas', labels, lines, {
-    fontSize: 18
+    padding: 6
 });
