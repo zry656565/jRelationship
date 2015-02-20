@@ -120,5 +120,5 @@ var relationship = jRelationship('#canvas', labels, lines, {
     resistance: 4,
     repulsion: 100,
     repulsionDistance: 150,
-    interval: 35
+    frame: 40
 });

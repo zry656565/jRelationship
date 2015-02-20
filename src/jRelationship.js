@@ -100,8 +100,10 @@ function jRelationship(selector, labels, lines, options) {
         resistance: 5,
         repulsion: 20,
         repulsionDistance: 100,
-        interval: 35
+        frame: 24
     }, options);
+
+    options.interval = 1000 / options.frame;
 
     labels = util.clone(labels);
     lines = util.clone(lines);
