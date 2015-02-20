@@ -160,14 +160,16 @@ function jRelationship(selector, labels, lines, options) {
                     y: label2.y + label2.height/2
                 };
 
-            ctx.fillStyle = getStyle({}, 'lineStyle');
             if (weight < 2) {
+                ctx.strokeStyle = getStyle({}, 'lineStyle');
                 ctx.beginPath();
                 ctx.moveTo(p1.x, p1.y);
                 ctx.lineTo(p2.x, p2.y);
                 ctx.closePath();
                 ctx.stroke();
             } else if (weight >= 2) {
+                ctx.fillStyle = getStyle({}, 'lineStyle');
+
                 var dx = p1.x - p2.x,
                     dy = p2.y - p1.y,
                     diffX = weight * dy / Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2)),
