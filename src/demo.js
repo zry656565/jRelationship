@@ -4,28 +4,28 @@
  */
 
 var labels = {
-    'js': { name: 'javascript', class: 'lang' },
-    'java': { name: 'Java', class: 'lang' },
-    'c': { name: 'C/C++', class: 'lang' },
-    'c#': { name: 'C#', class: 'lang' },
-    'css': { name: 'css', class: 'lang' },
-    'html': { name: 'html5', class: 'lang' },
-    'git': { name: 'git', class: 'tool' },
-    'justjs': { name: 'JustJS', class: 'experience' },
-    'jreparser': { name: 'JRE-Parser', class: 'experience' },
-    'ms-intern': { name: 'Microsoft实习', class: 'experience' },
-    'haijiao': { name: '海角教育', class: 'experience' },
-    'unity-3d': { name: 'Unity-3d', class: 'tool' },
-    'mongodb': { name: 'MongoDB', class: 'tool' },
-    'logv': { name: 'LogV', class: 'experience' },
-    'kinect': { name: 'Kinect', class: 'tool' },
-    'screenbuilder': { name: 'Screen Builder', class: 'experience' },
-    'adventure': { name: '冒险的召唤', class: 'experience' },
-    'jekyll': { name: 'jekyll', class: 'tool' },
-    'uav': { name: '小型无人机技术大赛', class: 'experience' },
-    'ssh': { name: 'Struct+Spring+Hibernate', class: 'tool' },
-    'game-dev': { name: '游戏开发', class: 'experience' },
-    'blog': { name: 'Jerry的乐园（博客）', class: 'experience' }
+    'js': { name: 'javascript', 'class': 'lang' },
+    'java': { name: 'Java', 'class': 'lang' },
+    'c': { name: 'C/C++', 'class': 'lang' },
+    'c#': { name: 'C#', 'class': 'lang' },
+    'css': { name: 'css', 'class': 'lang' },
+    'html': { name: 'html5', 'class': 'lang' },
+    'git': { name: 'git', 'class': 'tool' },
+    'justjs': { name: 'JustJS', 'class': 'experience' },
+    'jreparser': { name: 'JRE-Parser', 'class': 'experience' },
+    'ms-intern': { name: 'Microsoft实习', 'class': 'experience' },
+    'haijiao': { name: '海角教育', 'class': 'experience' },
+    'unity-3d': { name: 'Unity-3d', 'class': 'tool' },
+    'mongodb': { name: 'MongoDB', 'class': 'tool' },
+    'logv': { name: 'LogV', 'class': 'experience' },
+    'kinect': { name: 'Kinect', 'class': 'tool' },
+    'screenbuilder': { name: 'Screen Builder', 'class': 'experience' },
+    'adventure': { name: '冒险的召唤', 'class': 'experience' },
+    'jekyll': { name: 'jekyll', 'class': 'tool' },
+    'uav': { name: '小型无人机技术大赛', 'class': 'experience' },
+    'ssh': { name: 'Struct+Spring+Hibernate', 'class': 'tool' },
+    'game-dev': { name: '游戏开发', 'class': 'experience' },
+    'blog': { name: 'Jerry的乐园（博客）', 'class': 'experience' }
 };
 
 var lines = [
@@ -60,11 +60,46 @@ var lines = [
     ['jreparser', 'js', 3]
 ];
 
+//calculate three labels with max weight
+var key;
+
+for (key in labels) {
+    if (labels.hasOwnProperty(key)) {
+        labels[key].weight = 0;
+    }
+}
+
+lines.forEach(function(line) {
+    labels[line[0]].weight += line[2];
+    labels[line[1]].weight += line[2];
+});
+
+var maxThreeLabels = [];
+for (key in labels) {
+    if (labels.hasOwnProperty(key)) {
+        maxThreeLabels.push(labels[key]);
+        if (maxThreeLabels.length > 3) {
+            maxThreeLabels.sort(function(a, b) {
+                return b.weight - a.weight;
+            });
+            maxThreeLabels.length = 3;
+        }
+    }
+}
+
+//apply more style on three labels with max weight
+maxThreeLabels[0].padding = 10;
+maxThreeLabels[0].fontSize = 28;
+maxThreeLabels[1].padding = 10;
+maxThreeLabels[1].fontSize = 24;
+maxThreeLabels[2].padding = 8;
+maxThreeLabels[2].fontSize = 18;
+
 var relationship = jRelationship('#canvas', labels, lines, {
     //configuration of style
     padding: 6,
     labelStyle: '#333333',
-    lineStyle: '#777',
+    lineStyle: '#aaa',
     'class': {
         lang: {
             labelStyle: '#4F94CD'
@@ -77,8 +112,8 @@ var relationship = jRelationship('#canvas', labels, lines, {
         }
     },
     //configuration of force
-    elasticity: 0.2,
-    stableLength: 300,
+    elasticity: 0.3,
+    stableLength: 200,
     resistance: 4,
     repulsion: 100,
     repulsionDistance: 150,
