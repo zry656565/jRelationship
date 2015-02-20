@@ -86,22 +86,28 @@ function jRelationship(selector, labels, lines, options) {
 
     options = util.extend({
         //style of labels
+        class: {},
         fontSize: 16,
         padding: 12,
-        style: 'rgba(0, 0, 200, 1)',
+        labelStyle: 'rgba(0, 0, 200, 1)',
         lineStyle: 'rgba(0, 0, 0, 1)',
         radius: 4,
         //force between labels
         elasticity: 0.5,
         stableLength: 400,
         resistance: 5,
-        coulomb: 5000,
+        repulsion: 20,
+        repulsionDistance: 100,
         interval: 35
     }, options);
 
     labels = util.clone(labels);
     lines = util.clone(lines);
     ctx.textBaseline = 'top';
+
+    function getStyle(label, styleName) {
+        return label[styleName] || (options.class[label.class] && options.class[label.class][styleName]) || options[styleName];
+    }
 
     //several methods for graphic render
     var graphic = {
@@ -124,21 +130,21 @@ function jRelationship(selector, labels, lines, options) {
             }
         },
         calcLabel: function (label) {
-            label.fontSize = label.fontSize || options.fontSize;
-            label.padding = label.padding || options.padding;
+            label.fontSize = getStyle(label, 'fontSize');
+            label.padding = getStyle(label, 'padding');
             ctx.font = label.fontSize + "px serif";
             label.width = ctx.measureText(label.name).width + label.padding * 2;
             label.height = label.fontSize + label.padding * 2;
             //put the label on random place
             label.x = Math.random() * (canvas.width - label.width);
             label.y = Math.random() * (canvas.height - label.height);
-            label.radius = label.radius || options.radius;
+            label.radius = getStyle(label, 'radius');
             //initial velocity
             label.Vx = 0;
             label.Vy = 0;
         },
         drawLabel: function (label) {
-            ctx.fillStyle = label.style || options.style;
+            ctx.fillStyle = getStyle(label, 'labelStyle');
             graphic.util.roundRect(label.x, label.y, label.width, label.height, 4);
             ctx.fillStyle = "#fff";
             ctx.font = label.fontSize + "px serif";
@@ -154,7 +160,7 @@ function jRelationship(selector, labels, lines, options) {
                     y: label2.y + label2.height/2
                 };
 
-            ctx.fillStyle = options.lineStyle;
+            ctx.fillStyle = getStyle({}, 'lineStyle');
             if (weight < 2) {
                 ctx.beginPath();
                 ctx.moveTo(p1.x, p1.y);
@@ -202,16 +208,18 @@ function jRelationship(selector, labels, lines, options) {
                         Fy += F * (next.y - current.y) / distance;
                     }
 
-                    //Coulomb force
+                    //Repulsion force
                     for (var nextId in labels) {
                         if (labels.hasOwnProperty(nextId) && nextId !== id) {
                             next = labels[nextId];
                             distance = graphic.util.distance(current, next);
-                            F = options.coulomb / distance / distance;
-                            //calculate the force at direction X
-                            Fx += F * (next.x - current.x) / distance;
-                            //calculate the force at direction Y
-                            Fy += F * (next.y - current.y) / distance;
+                            if (distance < options.repulsionDistance) {
+                                var rate = (options.repulsionDistance - distance) / options.repulsionDistance;
+                                //calculate the force at direction X
+                                Fx += rate * options.repulsion * (next.x - current.x) / distance;
+                                //calculate the force at direction Y
+                                Fy += rate * options.repulsion * (next.y - current.y) / distance;
+                            }
                         }
                     }
 
@@ -275,28 +283,28 @@ function jRelationship(selector, labels, lines, options) {
 }
 
 var labels = {
-    'js': { name: 'javascript', type: 'lang' },
-    'java': { name: 'Java', type: 'lang' },
-    'c': { name: 'C/C++', type: 'lang' },
-    'c#': { name: 'C#', type: 'lang' },
-    'css': { name: 'css', type: 'lang' },
-    'html': { name: 'html5', type: 'lang' },
-    'git': { name: 'git', type: 'tool' },
-    'justjs': { name: 'JustJS', type: 'experience' },
-    'jreparser': { name: 'JRE-Parser', type: 'experience' },
-    'ms-intern': { name: 'Microsoft实习', type: 'experience' },
-    'haijiao': { name: '海角教育', type: 'experience' },
-    'unity-3d': { name: 'Unity-3d', type: 'tool' },
-    'mongodb': { name: 'MongoDB', type: 'tool' },
-    'logv': { name: 'LogV', type: 'experience' },
-    'kinect': { name: 'Kinect', type: 'tool' },
-    'screenbuilder': { name: 'Screen Builder', type: 'experience' },
-    'adventure': { name: '冒险的召唤', type: 'experience' },
-    'jekyll': { name: 'jekyll', type: 'tool' },
-    'uav': { name: '小型无人机技术大赛', type: 'experience' },
-    'ssh': { name: 'Struct+Spring+Hibernate', type: 'tool' },
-    'game-dev': { name: '游戏开发', type: 'experience' },
-    'blog': { name: 'Jerry的乐园（博客）', type: 'experience' }
+    'js': { name: 'javascript', class: 'lang' },
+    'java': { name: 'Java', class: 'lang' },
+    'c': { name: 'C/C++', class: 'lang' },
+    'c#': { name: 'C#', class: 'lang' },
+    'css': { name: 'css', class: 'lang' },
+    'html': { name: 'html5', class: 'lang' },
+    'git': { name: 'git', class: 'tool' },
+    'justjs': { name: 'JustJS', class: 'experience' },
+    'jreparser': { name: 'JRE-Parser', class: 'experience' },
+    'ms-intern': { name: 'Microsoft实习', class: 'experience' },
+    'haijiao': { name: '海角教育', class: 'experience' },
+    'unity-3d': { name: 'Unity-3d', class: 'tool' },
+    'mongodb': { name: 'MongoDB', class: 'tool' },
+    'logv': { name: 'LogV', class: 'experience' },
+    'kinect': { name: 'Kinect', class: 'tool' },
+    'screenbuilder': { name: 'Screen Builder', class: 'experience' },
+    'adventure': { name: '冒险的召唤', class: 'experience' },
+    'jekyll': { name: 'jekyll', class: 'tool' },
+    'uav': { name: '小型无人机技术大赛', class: 'experience' },
+    'ssh': { name: 'Struct+Spring+Hibernate', class: 'tool' },
+    'game-dev': { name: '游戏开发', class: 'experience' },
+    'blog': { name: 'Jerry的乐园（博客）', class: 'experience' }
 };
 
 var lines = [
@@ -332,5 +340,25 @@ var lines = [
 ];
 
 jRelationship('#canvas', labels, lines, {
-    padding: 6
+    padding: 6,
+    labelStyle: '#333333',
+    lineStyle: '#777',
+    'class': {
+        lang: {
+            labelStyle: '#4F94CD'
+        },
+        tool: {
+            labelStyle: '#FF6A6A'
+        },
+        experience: {
+            labelStyle: '#EEB422'
+        }
+    },
+    //config of force
+    elasticity: 0.05,
+    stableLength: 300,
+    resistance: 10,
+    repulsion: 200,
+    repulsionDistance: 150,
+    interval: 35
 });
