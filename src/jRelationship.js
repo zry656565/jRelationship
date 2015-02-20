@@ -216,9 +216,9 @@ function jRelationship(selector, labels, lines, options) {
                             if (distance < options.repulsionDistance) {
                                 var rate = (options.repulsionDistance - distance) / options.repulsionDistance;
                                 //calculate the force at direction X
-                                Fx += rate * options.repulsion * (next.x - current.x) / distance;
+                                Fx += rate * options.repulsion * (current.x - next.x) / distance;
                                 //calculate the force at direction Y
-                                Fy += rate * options.repulsion * (next.y - current.y) / distance;
+                                Fy += rate * options.repulsion * (current.y - next.y) / distance;
                             }
                         }
                     }
