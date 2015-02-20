@@ -307,7 +307,7 @@ function jRelationship(selector, labels, lines, options) {
     if (options.draggable) {
         var dX, dY;
         canvas.addEventListener('mousedown', function(e){
-            //find which one was selected
+            // find which one was selected
             for (var id in labels) {
                 if (labels.hasOwnProperty(id)) {
                     if (graphic.util.in(labels[id], e.clientX, e.clientY)) {
@@ -328,7 +328,13 @@ function jRelationship(selector, labels, lines, options) {
             }
         });
         canvas.addEventListener('mouseup', function(){
-            //release the selected label
+            // release the selected label
+            if (selectedLabel) {
+                selectedLabel = null;
+            }
+        });
+        canvas.addEventListener('mouseout', function() {
+            // release the selected label
             if (selectedLabel) {
                 selectedLabel = null;
             }
