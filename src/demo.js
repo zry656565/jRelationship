@@ -60,7 +60,7 @@ var lines = [
     ['jreparser', 'js', 3]
 ];
 
-//calculate three labels with max weight
+// calculate three labels with max weight
 var key;
 
 for (key in labels) {
@@ -87,7 +87,7 @@ for (key in labels) {
     }
 }
 
-//apply more style on three labels with max weight
+// apply more style on three labels with max weight
 maxThreeLabels[0].padding = 10;
 maxThreeLabels[0].fontSize = 28;
 maxThreeLabels[1].padding = 10;
@@ -96,10 +96,11 @@ maxThreeLabels[2].padding = 8;
 maxThreeLabels[2].fontSize = 18;
 
 var relationship = jRelationship('#canvas', labels, lines, {
-    //configuration of style
+    // configuration of global style
     padding: 6,
     labelStyle: '#333333',
     lineStyle: '#aaa',
+    // configuration of class
     'class': {
         lang: {
             labelStyle: '#4F94CD'
@@ -111,7 +112,7 @@ var relationship = jRelationship('#canvas', labels, lines, {
             labelStyle: '#EEB422'
         }
     },
-    //configuration of force
+    // configuration of force
     elasticity: 0.3,
     stableLength: 200,
     resistance: 4,

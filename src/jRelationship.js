@@ -5,7 +5,7 @@
 
 jRelationship.util = {
     clone: function(obj) { return JSON.parse(JSON.stringify(obj)); },
-    //extend method copy form jQuery
+    // extend method copy form jQuery
     extend: function() {
         var options, name, src, copy, copyIsArray, clone,
             target = arguments[0] || {},
@@ -85,14 +85,14 @@ function jRelationship(selector, labels, lines, options) {
     var util = jRelationship.util;
 
     options = util.extend({
-        //style of labels
+        // default style of labels
         class: {},
         fontSize: 16,
         padding: 12,
         labelStyle: 'rgba(0, 0, 200, 1)',
         lineStyle: 'rgba(0, 0, 0, 1)',
         radius: 4,
-        //force between labels
+        // default arguments of force between labels
         elasticity: 0.5,
         stableLength: 400,
         resistance: 5,
@@ -109,7 +109,7 @@ function jRelationship(selector, labels, lines, options) {
         return label[styleName] || (options.class[label.class] && options.class[label.class][styleName]) || options[styleName];
     }
 
-    //several methods for graphic render
+    // several methods for graphic rendering
     var graphic = {
         util: {
             roundRect: function (x, y, width, height, radius) {
@@ -135,11 +135,11 @@ function jRelationship(selector, labels, lines, options) {
             ctx.font = label.fontSize + "px serif";
             label.width = ctx.measureText(label.name).width + label.padding * 2;
             label.height = label.fontSize + label.padding * 2;
-            //put the label on random place
+            // put the label on random place
             label.x = Math.random() * (canvas.width - label.width);
             label.y = Math.random() * (canvas.height - label.height);
             label.radius = getStyle(label, 'radius');
-            //initial velocity
+            // initial velocity
             label.Vx = 0;
             label.Vy = 0;
         },
@@ -189,7 +189,7 @@ function jRelationship(selector, labels, lines, options) {
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            //get the new position of labels
+            // get the new position of labels
             for (id in labels) {
                 if (labels.hasOwnProperty(id)) {
                     var Fx = 0,
@@ -199,7 +199,7 @@ function jRelationship(selector, labels, lines, options) {
                         next,
                         distance;
 
-                    //Elasticity
+                    // Elasticity
                     for (var i = 0; i < relationship[id].length; i++) {
                         next = labels[relationship[id][i]];
                         distance = graphic.util.distance(current, next);
@@ -225,13 +225,13 @@ function jRelationship(selector, labels, lines, options) {
                         }
                     }
 
-                    //assume F = ma, m = 1, then F = a.
+                    // assume F = ma, m = 1, then F = a.
                     current.Vx += Fx * options.interval / 1000;
                     current.Vy += Fy * options.interval / 1000;
-                    //consider about resistance
+                    // consider about resistance
                     current.Vx -= (current.Vx > 0 ? 1 : -1) * options.resistance * options.interval / 1000;
                     current.Vy -= (current.Vy > 0 ? 1 : -1) * options.resistance * options.interval / 1000;
-                    //if touch the walls, reverse the velocity
+                    // if touch the walls, reverse the velocity
                     current.newPosition = {
                         x: current.x + current.Vx * options.interval / 1000,
                         y: current.y + current.Vy * options.interval / 1000
@@ -272,7 +272,7 @@ function jRelationship(selector, labels, lines, options) {
         }
     }
 
-    //store labels relationships in a big array
+    // store labels relationships in a big array
     lines.forEach(function(line) {
         relationship[line[0]].push(line[1]);
         relationship[line[1]].push(line[0]);
