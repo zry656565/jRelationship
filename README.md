@@ -1,4 +1,4 @@
-# jRelationship
+# jRelationship([中文版文档](https://github.com/zry656565/jRelationship/blob/master/README_zh_cn.md))
 
 A canvas solution to show relationships with labels and lines. See demo at http://zry656565.github.io/jRelationship .
 
