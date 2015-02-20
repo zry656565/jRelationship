@@ -250,11 +250,21 @@ function jRelationship(selector, labels, lines, options) {
                         x: current.x + current.Vx * options.interval / 1000,
                         y: current.y + current.Vy * options.interval / 1000
                     };
-                    if (current.newPosition.x < 0 || current.newPosition.x + current.width > canvas.width) {
+                    if (current.newPosition.x < 0) {
                         current.Vx = -current.Vx;
+                        current.newPosition.x = 0;
                     }
-                    if (current.newPosition.y < 0 || current.newPosition.y + current.height > canvas.height) {
+                    if(current.newPosition.x + current.width > canvas.width) {
+                        current.Vx = -current.Vx;
+                        current.newPosition.x = canvas.width - current.width;
+                    }
+                    if (current.newPosition.y < 0) {
                         current.Vy = -current.Vy;
+                        current.newPosition.y = 0;
+                    }
+                    if (current.newPosition.y + current.height > canvas.height) {
+                        current.Vy = -current.Vy;
+                        current.newPosition.y = canvas.height - current.height;
                     }
                 }
             }
