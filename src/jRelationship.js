@@ -82,9 +82,11 @@ function jRelationship(selector, labels, lines, options) {
         throw('Your browser do not support canvas.');
     }
 
-    var util = jRelationship.util;
+    var util = jRelationship.util,
+        selectedLabel = null;
 
     options = util.extend({
+        draggable: false,
         // default style of labels
         class: {},
         fontSize: 16,
@@ -127,6 +129,10 @@ function jRelationship(selector, labels, lines, options) {
             },
             distance: function (label1, label2) {
                 return Math.sqrt( Math.pow(label1.x - label2.x, 2) + Math.pow(label1.y - label2.y, 2) );
+            },
+            'in': function(label, mouseX, mouseY) {
+                return mouseX > label.x && mouseX < label.x + label.width &&
+                       mouseY > label.y && mouseY < label.y + label.height;
             }
         },
         calcLabel: function (label) {
@@ -199,28 +205,36 @@ function jRelationship(selector, labels, lines, options) {
                         next,
                         distance;
 
+                    if (current === selectedLabel) {
+                        continue;
+                    }
+
                     // Elasticity
                     for (var i = 0; i < relationship[id].length; i++) {
                         next = labels[relationship[id][i]];
-                        distance = graphic.util.distance(current, next);
-                        F = options.elasticity * (distance - options.stableLength);
-                        //calculate the force at direction X
-                        Fx += F * (next.x - current.x) / distance;
-                        //calculate the force at direction Y
-                        Fy += F * (next.y - current.y) / distance;
+                        if (next !== selectedLabel) {
+                            distance = graphic.util.distance(current, next);
+                            F = options.elasticity * (distance - options.stableLength);
+                            //calculate the force at direction X
+                            Fx += F * (next.x - current.x) / distance;
+                            //calculate the force at direction Y
+                            Fy += F * (next.y - current.y) / distance;
+                        }
                     }
 
                     //Repulsion force
                     for (var nextId in labels) {
                         if (labels.hasOwnProperty(nextId) && nextId !== id) {
                             next = labels[nextId];
-                            distance = graphic.util.distance(current, next);
-                            if (distance < options.repulsionDistance) {
-                                var rate = (options.repulsionDistance - distance) / options.repulsionDistance;
-                                //calculate the force at direction X
-                                Fx += rate * options.repulsion * (current.x - next.x) / distance;
-                                //calculate the force at direction Y
-                                Fy += rate * options.repulsion * (current.y - next.y) / distance;
+                            if (next !== selectedLabel) {
+                                distance = graphic.util.distance(current, next);
+                                if (distance < options.repulsionDistance) {
+                                    var rate = (options.repulsionDistance - distance) / options.repulsionDistance;
+                                    //calculate the force at direction X
+                                    Fx += rate * options.repulsion * (current.x - next.x) / distance;
+                                    //calculate the force at direction Y
+                                    Fy += rate * options.repulsion * (current.y - next.y) / distance;
+                                }
                             }
                         }
                     }
@@ -246,8 +260,10 @@ function jRelationship(selector, labels, lines, options) {
             }
             for (id in labels) {
                 if (labels.hasOwnProperty(id)) {
-                    labels[id].x = labels[id].newPosition.x;
-                    labels[id].y = labels[id].newPosition.y;
+                    if (labels[id] !== selectedLabel) {
+                        labels[id].x = labels[id].newPosition.x;
+                        labels[id].y = labels[id].newPosition.y;
+                    }
                 }
             }
 
@@ -277,6 +293,37 @@ function jRelationship(selector, labels, lines, options) {
         relationship[line[0]].push(line[1]);
         relationship[line[1]].push(line[0]);
     });
+
+    if (options.draggable) {
+        var dX, dY;
+        canvas.addEventListener('mousedown', function(e){
+            //find which one was selected
+            for (var id in labels) {
+                if (labels.hasOwnProperty(id)) {
+                    if (graphic.util.in(labels[id], e.clientX, e.clientY)) {
+                        selectedLabel = labels[id];
+                        dX = e.clientX - labels[id].x;
+                        dY = e.clientY - labels[id].y;
+                        selectedLabel.Vx = 0;
+                        selectedLabel.Vy = 0;
+                        break;
+                    }
+                }
+            }
+        });
+        canvas.addEventListener('mousemove', function(e){
+            if (selectedLabel) {
+                selectedLabel.x = e.clientX - dX;
+                selectedLabel.y = e.clientY - dY;
+            }
+        });
+        canvas.addEventListener('mouseup', function(){
+            //release the selected label
+            if (selectedLabel) {
+                selectedLabel = null;
+            }
+        });
+    }
 
     var intervalId = setInterval(graphic.draw, options.interval);
 

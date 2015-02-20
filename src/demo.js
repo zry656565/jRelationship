@@ -96,6 +96,8 @@ maxThreeLabels[2].padding = 8;
 maxThreeLabels[2].fontSize = 18;
 
 var relationship = jRelationship('#canvas', labels, lines, {
+    // we can drag labels by mouse
+    draggable: true,
     // configuration of global style
     padding: 6,
     labelStyle: '#333333',
