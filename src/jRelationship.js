@@ -85,15 +85,18 @@ function jRelationship(selector, labels, lines, options) {
     var util = jRelationship.util;
 
     options = util.extend({
+        //style of labels
         fontSize: 16,
         padding: 12,
         style: 'rgba(0, 0, 200, 1)',
         lineStyle: 'rgba(0, 0, 0, 1)',
         radius: 4,
+        //force between labels
         elasticity: 0.5,
-        stableLength: 200,
-        interval: 35,
-        resistance: 10
+        stableLength: 400,
+        resistance: 5,
+        coulomb: 5000,
+        interval: 35
     }, options);
 
     labels = util.clone(labels);
@@ -188,6 +191,7 @@ function jRelationship(selector, labels, lines, options) {
                         next,
                         distance;
 
+                    //Elasticity
                     for (var i = 0; i < relationship[id].length; i++) {
                         next = labels[relationship[id][i]];
                         distance = graphic.util.distance(current, next);
@@ -196,6 +200,19 @@ function jRelationship(selector, labels, lines, options) {
                         Fx += F * (next.x - current.x) / distance;
                         //calculate the force at direction Y
                         Fy += F * (next.y - current.y) / distance;
+                    }
+
+                    //Coulomb force
+                    for (var nextId in labels) {
+                        if (labels.hasOwnProperty(nextId) && nextId !== id) {
+                            next = labels[nextId];
+                            distance = graphic.util.distance(current, next);
+                            F = options.coulomb / distance / distance;
+                            //calculate the force at direction X
+                            Fx += F * (next.x - current.x) / distance;
+                            //calculate the force at direction Y
+                            Fy += F * (next.y - current.y) / distance;
+                        }
                     }
 
                     //assume F = ma, m = 1, then F = a.
